@@ -5,11 +5,11 @@ import java.util.List;
 public interface PostRepository {
     List<Post> getAll();
 
-    boolean save(Post post);
+    void save(Post post);
 
-    boolean delete(int id);
+    void delete(int id);
 
-    boolean update(Post post);
+    void update(Post post);
 
     Post getById(int id);
 }

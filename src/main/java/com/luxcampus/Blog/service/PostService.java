@@ -16,16 +16,21 @@ public class PostService implements PostServiceInterface {
         return users;
     }
 
-    public boolean save(Post post){
-        return postRepository.save(post);
+    public void save(Post post){
+       postRepository.save(post);
     }
 
-    public boolean delete(int id){
-        return postRepository.delete(id);
+    public void delete(int id){
+        postRepository.delete(id);
     }
 
-    public boolean update(Post post){
-        return postRepository.update(post);
+    public void update(Post post){
+        postRepository.update(post);
+    }
+
+    @Override
+    public Post findById(int id) {
+        return postRepository.getById(id);
     }
 
 }

@@ -24,8 +24,8 @@ public class PostService implements PostServiceInterface {
         postRepository.delete(id);
     }
 
-    public void update(Post post){
-        postRepository.update(post);
+    public void update(int id, Post post){
+        postRepository.update(id, post);
     }
 
     @Override

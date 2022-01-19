@@ -21,10 +21,11 @@ public class JdbcPostRepository implements PostRepository {
     private static final String GET_ALL_SQL = "SELECT id, title, content FROM post;";
     private static final String SAVE_SQL = "INSERT INTO post (title, content) VALUES (:title, :content)";
     private static final String GET_BY_ID_SQL = "SELECT * FROM post where id = ?;";
+    private static final String DELETE_SQL = "DELETE FROM post where id= ?";
 
     private static final String GET_ID_BY_EMAIL_AND_PASSWORD_SQL = "SELECT id FROM post where title = ? and content = ?;";
-    private static final String DELETE_SQL = "DELETE FROM post where id= ?";
-    private static final String UPDATE_SQL = "UPDATE post SET title = ?, content = ? where id = ?";
+
+    private static final String UPDATE_SQL = "UPDATE post SET title = :title, content = :content where id = :id";
 
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate nameParameterJdbcTemplate;
@@ -50,11 +51,15 @@ public class JdbcPostRepository implements PostRepository {
 
     @Override
     public void delete(int id) {
-
+        jdbcTemplate.update(DELETE_SQL, id);
     }
 
     @Override
-    public void update(Post post) {
-
+    public void update(int id, Post post) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("title", post.getTitle());
+        parameters.put("content", post.getContent());
+        parameters.put("id", id);
+        nameParameterJdbcTemplate.update(UPDATE_SQL, parameters);
     }
 }

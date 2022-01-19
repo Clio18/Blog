@@ -12,7 +12,7 @@ public interface PostServiceInterface {
 
     void delete(int id);
 
-    void update(Post post);
+    void update(int id, Post post);
 
     Post findById(int id);
 }

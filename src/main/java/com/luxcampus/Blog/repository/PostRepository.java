@@ -9,7 +9,7 @@ public interface PostRepository {
 
     void delete(int id);
 
-    void update(Post post);
+    void update(int id, Post post);
 
     Post getById(int id);
 }

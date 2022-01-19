@@ -10,7 +10,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping(path = "/blog")
+@RequestMapping(path = "/api/v1/posts")
 @RequiredArgsConstructor
 //@Slf4j
 public class BlogController {
@@ -32,9 +32,19 @@ public class BlogController {
         logger.info("add post {}: ", post);
     }
 
-    @PostMapping
+    @PostMapping("/{id}")
     public Post findById(@PathVariable int id){
         Post post = postService.findById(id);
         return post;
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable int id){
+        postService.delete(id);
+    }
+
+    @PutMapping("/{id}")
+    public void save(@PathVariable int id, @RequestBody Post post){
+        postService.update(id, post);
     }
 }

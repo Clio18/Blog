@@ -16,6 +16,7 @@ public class PostController {
 
     private final PostServiceInterface postService;
 
+
     @GetMapping ("/{id}")
     public Post findById(@PathVariable Long id){
         Post post = postService.findById(id);
@@ -42,7 +43,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public void save(@PathVariable Long id, @RequestBody Post post){
+    public void update(@PathVariable Long id, @RequestBody Post post){
         postService.update(id, post);
     }
 }

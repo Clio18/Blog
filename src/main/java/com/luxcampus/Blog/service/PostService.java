@@ -30,7 +30,6 @@ public class PostService implements PostServiceInterface {
         postRepository.save(post);
     }
 
-    @Override
     public Post findById(Long id) {
         return postRepository.getById(id);
     }

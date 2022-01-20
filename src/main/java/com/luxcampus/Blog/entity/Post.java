@@ -1,9 +1,7 @@
 package com.luxcampus.Blog.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import javax.persistence.*;
 
 @Data
@@ -17,8 +15,8 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column (name = "title")
+    @Column
     private String title;
-    @Column(name = "content")
+    @Column
     private String content;
 }

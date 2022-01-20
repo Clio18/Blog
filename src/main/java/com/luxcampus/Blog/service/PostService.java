@@ -11,7 +11,7 @@ public class PostService implements PostServiceInterface {
     private final PostRepository postRepository;
 
     public List<Post> getAll() {
-        List<Post> users = postRepository.getAll();
+        List<Post> users = postRepository.findAll();
         System.out.println("Posts in blog: " + users.size());
         return users;
     }
@@ -20,16 +20,18 @@ public class PostService implements PostServiceInterface {
        postRepository.save(post);
     }
 
-    public void delete(int id){
-        postRepository.delete(id);
+    public void delete(Long id){
+        Post post = postRepository.getById(id);
+        postRepository.delete(post);
     }
 
-    public void update(int id, Post post){
-        postRepository.update(id, post);
+    public void update(Long id, Post post){
+        post.setId(id);
+        postRepository.save(post);
     }
 
     @Override
-    public Post findById(int id) {
+    public Post findById(Long id) {
         return postRepository.getById(id);
     }
 

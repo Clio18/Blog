@@ -1,15 +1,9 @@
 package com.luxcampus.Blog.repository;
 import com.luxcampus.Blog.entity.Post;
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface PostRepository {
-    List<Post> getAll();
+@Repository
+public interface PostRepository extends JpaRepository<Post,Long> {
 
-    void save(Post post);
-
-    void delete(int id);
-
-    void update(int id, Post post);
-
-    Post getById(int id);
 }

@@ -10,9 +10,9 @@ public interface PostServiceInterface {
 
     void save(Post post);
 
-    void delete(int id);
+    void delete(Long id);
 
-    void update(int id, Post post);
+    void update(Long id, Post post);
 
-    Post findById(int id);
+    Post findById(Long id);
 }

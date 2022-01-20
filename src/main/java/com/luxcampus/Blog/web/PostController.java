@@ -5,19 +5,23 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 
 @RestController
 @RequestMapping(path = "/api/v1/posts")
 @RequiredArgsConstructor
-//@Slf4j
-public class BlogController {
-
+public class PostController {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     private final PostServiceInterface postService;
+
+    @GetMapping ("/{id}")
+    public Post findById(@PathVariable Long id){
+        Post post = postService.findById(id);
+        logger.info("get post {} ", post);
+        return post;
+    }
 
     @GetMapping
     public List<Post> findAll(){
@@ -29,22 +33,16 @@ public class BlogController {
     @PostMapping
     public void save(@RequestBody Post post){
         postService.save(post);
-        logger.info("add post {}: ", post);
-    }
-
-    @PostMapping("/{id}")
-    public Post findById(@PathVariable int id){
-        Post post = postService.findById(id);
-        return post;
+        logger.info("add post {} ", post);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable int id){
+    public void delete(@PathVariable Long id){
         postService.delete(id);
     }
 
     @PutMapping("/{id}")
-    public void save(@PathVariable int id, @RequestBody Post post){
+    public void save(@PathVariable Long id, @RequestBody Post post){
         postService.update(id, post);
     }
 }

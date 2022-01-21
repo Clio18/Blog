@@ -15,4 +15,8 @@ public interface PostServiceInterface {
     void update(Long id, Post post);
 
     Post findById(Long id);
+
+    List<Post> findByTitleIs(String title);
+
+    List<Post> findByOrderByTitleAsc();
 }

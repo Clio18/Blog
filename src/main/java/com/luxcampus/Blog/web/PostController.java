@@ -20,21 +20,21 @@ public class PostController {
     @GetMapping ("/{id}")
     public Post findById(@PathVariable Long id){
         Post post = postService.findById(id);
-        logger.info("get post {} ", post);
+        logger.info("Get post {} ", post);
         return post;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Post> findAll(){
         List<Post> posts = postService.getAll();
-        logger.info("posts {}", posts);
+        logger.info("Posts {}", posts);
         return posts;
     }
 
     @PostMapping
     public void save(@RequestBody Post post){
         postService.save(post);
-        logger.info("add post {} ", post);
+        logger.info("Add post {} ", post);
     }
 
     @DeleteMapping("/{id}")
@@ -45,5 +45,19 @@ public class PostController {
     @PutMapping("/{id}")
     public void update(@PathVariable Long id, @RequestBody Post post){
         postService.update(id, post);
+    }
+
+    @GetMapping
+    public List<Post> findByTitle(@RequestParam String title){
+        List<Post> posts = postService.findByTitleIs(title);
+        logger.info("Get by title post {} ", posts);
+        return posts;
+    }
+
+    @GetMapping("/sort")
+    public List<Post> sortByTitle(){
+        List<Post> posts = postService.findByOrderByTitleAsc();
+        logger.info("Sort by title post {} ", posts);
+        return posts;
     }
 }

@@ -34,4 +34,15 @@ public class PostService implements PostServiceInterface {
         return postRepository.getById(id);
     }
 
+    @Override
+    public List<Post> findByTitleIs(String title) {
+        return postRepository.findByTitleIs(title);
+    }
+
+    @Override
+    public List<Post> findByOrderByTitleAsc() {
+        return postRepository.findByOrderByTitleAsc();
+    }
+
+
 }

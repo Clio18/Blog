@@ -13,9 +13,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
 class PostControllerTest {
@@ -40,8 +44,7 @@ class PostControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/1")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers
-                        .status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("news"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content").value("bbc.com"));
     }
@@ -64,10 +67,9 @@ class PostControllerTest {
         when(postService.getAll())
                 .thenReturn(posts);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/all")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers
-                        .status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("news"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("bbc.com"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].title").value("sport"))
@@ -85,8 +87,7 @@ class PostControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/posts")
                 .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(post)))
-                .andExpect(MockMvcResultMatchers
-                        .status().isOk());
+                .andExpect(status().isOk());
 
         verify(postService).save(any(Post.class));
     }
@@ -96,8 +97,7 @@ class PostControllerTest {
     void delete() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/posts/1")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers
-                        .status().isOk());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -111,9 +111,63 @@ class PostControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/posts/1")
                 .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(post)))
-                .andExpect(MockMvcResultMatchers
-                        .status().isOk());
+                .andExpect(status().isOk());
 
+    }
+
+    @Test
+    @DisplayName(value = "Test GET /api/v1/posts by title")
+    void findByTitle() throws Exception {
+        Post one = Post.builder()
+                .id(1L)
+                .title("news")
+                .content("bbc.com")
+                .build();
+        Post two = Post.builder()
+                .id(2L)
+                .title("news")
+                .content("football.com")
+                .build();
+
+        List<Post> posts = Arrays.asList(one, two);
+
+        when(postService.findByTitleIs("news"))
+                .thenReturn(posts);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts?title=news")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].title").value("news"))
+                .andExpect(jsonPath("$[0].content").value("bbc.com"))
+                .andExpect(jsonPath("$[1].title").value("news"))
+                .andExpect(jsonPath("$[1].content").value("football.com"));
+    }
+
+    @Test
+    @DisplayName(value = "Test GET /api/v1/posts/sort sort")
+    void sortByTitle() throws Exception {
+        Post one = Post.builder()
+                .id(1L)
+                .title("B")
+                .content("bbc.com")
+                .build();
+        Post two = Post.builder()
+                .id(2L)
+                .title("A")
+                .content("football.com")
+                .build();
+
+        List<Post> posts = Arrays.asList(one, two);
+
+
+        when(postService.findByOrderByTitleAsc())
+                .thenReturn(posts);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/sort")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
     }
 
 

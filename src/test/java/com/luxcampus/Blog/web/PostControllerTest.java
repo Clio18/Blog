@@ -16,8 +16,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,7 +46,10 @@ class PostControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("news"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content").value("bbc.com"));
+
+        verify(postService, times(1)).findById(1L);
     }
+
 
     @Test
     @DisplayName(value = "Test GET /api/v1/posts and return defined posts")
@@ -74,6 +76,8 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("bbc.com"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].title").value("sport"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].content").value("football.com"));
+
+        verify(postService, times(1)).getAll();
     }
 
     @Test
@@ -90,6 +94,7 @@ class PostControllerTest {
                 .andExpect(status().isOk());
 
         verify(postService).save(any(Post.class));
+        verify(postService, times(1)).save(post);
     }
 
     @Test
@@ -98,6 +103,7 @@ class PostControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/posts/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+        verify(postService, times(1)).delete(1L);
     }
 
     @Test
@@ -112,6 +118,8 @@ class PostControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/posts/1")
                 .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(post)))
                 .andExpect(status().isOk());
+
+        verify(postService, times(1)).update(1L, post);
 
     }
 
@@ -142,6 +150,8 @@ class PostControllerTest {
                 .andExpect(jsonPath("$[0].content").value("bbc.com"))
                 .andExpect(jsonPath("$[1].title").value("news"))
                 .andExpect(jsonPath("$[1].content").value("football.com"));
+
+        verify(postService, times(1)).findByTitleIs(any());
     }
 
     @Test
@@ -168,6 +178,8 @@ class PostControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
+
+        verify(postService, times(1)).findByOrderByTitleAsc();
     }
 
 

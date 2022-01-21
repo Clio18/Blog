@@ -24,13 +24,6 @@ public class PostController {
         return post;
     }
 
-    @GetMapping("/all")
-    public List<Post> findAll(){
-        List<Post> posts = postService.getAll();
-        logger.info("Posts {}", posts);
-        return posts;
-    }
-
     @PostMapping
     public void save(@RequestBody Post post){
         postService.save(post);
@@ -48,16 +41,19 @@ public class PostController {
     }
 
     @GetMapping
-    public List<Post> findByTitle(@RequestParam String title){
-        List<Post> posts = postService.findByTitleIs(title);
-        logger.info("Get by title post {} ", posts);
-        return posts;
+    public List<Post> getAllPosts(@RequestParam(value = "title", required = false) String title,
+                                  @RequestParam(value = "sort", required = false) String sort) {
+        logger.info("getAllPostsMethod");
+        if (title != null) {
+            logger.info("in findAllPostsByTitle method");
+            return postService.findByTitleIs(title);
+        } else if (sort != null) {
+            logger.info("in findAllPostsSortedByTitle method");
+            return postService.findByOrderByTitleAsc();
+        } else {
+            return postService.getAll();
+        }
     }
 
-    @GetMapping("/sort")
-    public List<Post> sortByTitle(){
-        List<Post> posts = postService.findByOrderByTitleAsc();
-        logger.info("Sort by title post {} ", posts);
-        return posts;
-    }
+
 }

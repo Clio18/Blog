@@ -69,7 +69,7 @@ class PostControllerTest {
         when(postService.getAll())
                 .thenReturn(posts);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/all")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("news"))
@@ -174,7 +174,7 @@ class PostControllerTest {
         when(postService.findByOrderByTitleAsc())
                 .thenReturn(posts);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/sort")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts?sort=A")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));

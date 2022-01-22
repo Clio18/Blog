@@ -32,7 +32,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName(value = "Test GET /api/v1/posts/1 and return defined post")
-    void findById() throws Exception {
+    void testFindById() throws Exception {
         Post post = Post.builder()
                 .id(1L)
                 .title("news")
@@ -53,7 +53,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName(value = "Test GET /api/v1/posts and return defined posts")
-    void findAll() throws Exception {
+    void testFindAll() throws Exception {
         //prepare
         Post one = Post.builder()
                 .id(1L)
@@ -82,7 +82,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName(value = "Test POST /api/v1/posts and verify the saving post")
-    void save() throws Exception {
+    void testSave() throws Exception {
         Post post = Post.builder()
                 .id(1L)
                 .title("news")
@@ -99,7 +99,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName(value = "Test DELETE /api/v1/posts/1")
-    void delete() throws Exception {
+    void testDelete() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/posts/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -108,7 +108,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName(value = "Test PUT /api/v1/posts/1")
-    void update() throws Exception {
+    void testUpdate() throws Exception {
         Post post = Post.builder()
                 .id(1L)
                 .title("news")
@@ -125,7 +125,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName(value = "Test GET /api/v1/posts by title")
-    void findByTitle() throws Exception {
+    void testFindByTitle() throws Exception {
         Post one = Post.builder()
                 .id(1L)
                 .title("news")
@@ -156,7 +156,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName(value = "Test GET /api/v1/posts/sort sort")
-    void sortByTitle() throws Exception {
+    void testSortByTitle() throws Exception {
         Post one = Post.builder()
                 .id(1L)
                 .title("B")

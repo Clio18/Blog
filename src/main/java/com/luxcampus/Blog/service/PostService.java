@@ -48,5 +48,18 @@ public class PostService implements PostServiceInterface {
         return postRepository.findByOrderByTitleAsc();
     }
 
+    @Override
+    public List<Post> findByStarTrue() {
+        return postRepository.findByStarTrue();
+    }
+
+    public Post updatePostBySetStarTrue(Long id){
+        return postRepository.updatePostBySetStarTrue(id);
+    }
+
+    @Override
+    public Post updatePostBySetStarFalse(Long id) {
+        return postRepository.updatePostBySetStarFalse(id);
+    }
 
 }

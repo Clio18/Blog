@@ -1,4 +1,5 @@
 package com.luxcampus.Blog.web;
+
 import com.luxcampus.Blog.entity.Post;
 import com.luxcampus.Blog.service.PostServiceInterface;
 import lombok.RequiredArgsConstructor;
@@ -19,26 +20,26 @@ public class PostController {
     private final PostServiceInterface postService;
 
 
-    @GetMapping ("/{id}")
-    public Post findById(@PathVariable Long id){
+    @GetMapping("/{id}")
+    public Post findById(@PathVariable Long id) {
         Post post = postService.findById(id);
         logger.info("Get post {} ", post);
         return post;
     }
 
     @PostMapping
-    public void save(@RequestBody Post post){
+    public void save(@RequestBody Post post) {
         postService.save(post);
         logger.info("Add post {} ", post);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id){
+    public void delete(@PathVariable Long id) {
         postService.delete(id);
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody Post post){
+    public void update(@PathVariable Long id, @RequestBody Post post) {
         postService.update(id, post);
     }
 
@@ -57,5 +58,22 @@ public class PostController {
         }
     }
 
+    @GetMapping("/star")
+    public List<Post> getAllPostsWithStar() {
+        logger.info("getAllPostsMethod");
+        logger.info("in findAllPostsByStar method");
+        return postService.findByStarTrue();
+    }
+
+
+    @PutMapping("/{id}/star")
+    public Post setValueForStarTrue(@PathVariable Long id) {
+       return postService.updatePostBySetStarTrue(id);
+    }
+
+    @DeleteMapping("/{id}/star")
+    public Post updatePostBySetStarFalse(@PathVariable Long id) {
+       return postService.updatePostBySetStarFalse(id);
+    }
 
 }

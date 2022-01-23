@@ -153,4 +153,80 @@ class PostServiceTest {
 
         verify(postRepository, times(1)).findByOrderByTitleAsc();
     }
+
+    @Test
+    void testFindByStarTrue() {
+        PostService postService = new PostService(postRepository);
+
+        Post one = Post.builder()
+                .id(1L)
+                .title("news")
+                .content("bbc.com")
+                .star(true)
+                .build();
+        Post two = Post.builder()
+                .id(2L)
+                .title("news")
+                .content("ccc.com")
+                .star(true)
+                .build();
+        List<Post> list = List.of(one, two);
+
+        when(postRepository.findByStarTrue()).thenReturn(list);
+
+        List<Post> actualPosts = postService.findByStarTrue();
+        assertEquals(list.size(), actualPosts.size());
+        assertEquals(list.get(1).getTitle(), actualPosts.get(1).getTitle());
+        assertEquals(list.get(1).getContent(), actualPosts.get(1).getContent());
+        assertEquals(list.get(1).getId(), actualPosts.get(1).getId());
+        assertEquals(list.get(1).isStar(), actualPosts.get(1).isStar());
+
+
+        verify(postRepository, times(1)).findByStarTrue();
+
+    }
+
+    @Test
+    void testUpdatePostBySetStarTrue() {
+        PostService postService = new PostService(postRepository);
+        Post one = Post.builder()
+                .id(1L)
+                .title("news")
+                .content("bbc.com")
+                .star(true)
+                .build();
+
+        when(postRepository.updatePostBySetStarTrue(1L)).thenReturn(one);
+
+        Post actualPost = postService.updatePostBySetStarTrue(1L);
+        assertEquals(one.getTitle(), actualPost.getTitle());
+        assertEquals(one.getContent(), actualPost.getContent());
+        assertEquals(one.isStar(), actualPost.isStar());
+
+
+        verify(postRepository, times(1)).updatePostBySetStarTrue(1L);
+
+    }
+
+    @Test
+    void testUpdatePostBySetStarFalse() {
+        PostService postService = new PostService(postRepository);
+        Post one = Post.builder()
+                .id(1L)
+                .title("news")
+                .content("bbc.com")
+                .star(false)
+                .build();
+
+        when(postRepository.updatePostBySetStarFalse(1L)).thenReturn(one);
+
+        Post actualPost = postService.updatePostBySetStarFalse(1L);
+
+        assertEquals(one.getTitle(), actualPost.getTitle());
+        assertEquals(one.getContent(), actualPost.getContent());
+        assertEquals(one.isStar(), actualPost.isStar());
+
+
+        verify(postRepository, times(1)).updatePostBySetStarFalse(1L);
+    }
 }

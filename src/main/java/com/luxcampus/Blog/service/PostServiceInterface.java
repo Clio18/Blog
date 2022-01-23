@@ -19,4 +19,11 @@ public interface PostServiceInterface {
     List<Post> findByTitleIs(String title);
 
     List<Post> findByOrderByTitleAsc();
+
+    List<Post> findByStarTrue();
+
+    Post updatePostBySetStarTrue(Long id);
+
+    Post updatePostBySetStarFalse(Long id);
+
 }

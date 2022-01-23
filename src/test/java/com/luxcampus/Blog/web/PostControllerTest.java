@@ -183,4 +183,74 @@ class PostControllerTest {
     }
 
 
+    @Test
+    void getAllPostsWithStar() throws Exception {
+        Post one = Post.builder()
+                .id(1L)
+                .title("news")
+                .content("bbc.com")
+                .star(true)
+                .build();
+        Post two = Post.builder()
+                .id(2L)
+                .title("sport")
+                .content("football.com")
+                .star(true)
+                .build();
+        List<Post> posts = Arrays.asList(one, two);
+        when(postService.findByStarTrue())
+                .thenReturn(posts);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/star")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(hasSize(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("news"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("bbc.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].star").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].title").value("sport"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].content").value("football.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].star").value(true));
+
+        verify(postService, times(1)).findByStarTrue();
+    }
+
+    @Test
+    void setValueForStarTrue() throws Exception {
+        Post one = Post.builder()
+                .id(1L)
+                .title("news")
+                .content("bbc.com")
+                .star(true)
+                .build();
+        when(postService.updatePostBySetStarTrue(1L)).thenReturn(one);
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/posts/1/star")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("news"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content").value("bbc.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.star").value(true));
+
+        verify(postService, times(1)).updatePostBySetStarTrue(1L);
+
+    }
+
+    @Test
+    void updatePostBySetStarFalse() throws Exception {
+        Post one = Post.builder()
+                .id(1L)
+                .title("news")
+                .content("bbc.com")
+                .star(false)
+                .build();
+        when(postService.updatePostBySetStarFalse(1L)).thenReturn(one);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/posts/1/star")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("news"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content").value("bbc.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.star").value(false));
+
+        verify(postService, times(1)).updatePostBySetStarFalse(1L);
+    }
 }

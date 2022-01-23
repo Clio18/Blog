@@ -16,4 +16,6 @@ public class Post {
     private String title;
     @Column
     private String content;
+    @Column(columnDefinition = "boolean default false")
+    private boolean star;
 }

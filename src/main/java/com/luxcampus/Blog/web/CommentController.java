@@ -1,14 +1,11 @@
 package com.luxcampus.Blog.web;
-
 import com.luxcampus.Blog.entity.Comment;
-import com.luxcampus.Blog.entity.Post;
 import com.luxcampus.Blog.entity.dto.CommentWithoutPostDto;
 import com.luxcampus.Blog.service.CommentServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
 

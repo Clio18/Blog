@@ -1,6 +1,4 @@
 package com.luxcampus.Blog.entity.dto;
-
-import com.luxcampus.Blog.entity.Comment;
 import lombok.Builder;
 import lombok.Data;
 

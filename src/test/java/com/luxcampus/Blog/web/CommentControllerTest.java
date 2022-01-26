@@ -1,6 +1,8 @@
 package com.luxcampus.Blog.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luxcampus.Blog.entity.Comment;
+import com.luxcampus.Blog.entity.Post;
+import com.luxcampus.Blog.entity.dto.CommentWithoutPostDto;
 import com.luxcampus.Blog.service.CommentService;
 import com.luxcampus.Blog.service.PostService;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import static org.mockito.Mockito.*;
@@ -29,7 +33,7 @@ class CommentControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void findById() throws Exception {
+    void findCommentByPostId() throws Exception {
         //prepare
         Comment one = Comment.builder()
                 .id(1L)
@@ -54,5 +58,43 @@ class CommentControllerTest {
 
         verify(commentService, times(1)).findCommentsByPostId(1L);
 
+    }
+
+    @Test
+    void addCommentToPostById() throws Exception {
+        Post post = Post.builder()
+                .id(1L)
+                .title("news")
+                .content("bbc.com")
+                .build();
+
+        Comment one = Comment.builder()
+                .id(1L)
+                .text("aaaa")
+                .post(post)
+                .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/posts/1/comments")
+                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(one)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void findCommentByPostIdAndCommentId() throws Exception {
+        Comment one = Comment.builder()
+                .id(1L)
+                .text("aaaa")
+                .build();
+
+        when(commentService.findCommentByPostIdAndCommentId(1L, 1L))
+                .thenReturn(one);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/1/comments/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.text").value("aaaa"));
+
+        verify(commentService, times(1)).findCommentByPostIdAndCommentId(1L, 1L);
     }
 }

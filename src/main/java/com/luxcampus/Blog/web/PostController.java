@@ -76,7 +76,6 @@ public class PostController {
     }
 
     // void methods
-
     @PostMapping
     public void save(@RequestBody Post post) {
         postService.save(post);
@@ -93,6 +92,7 @@ public class PostController {
         postService.update(id, post);
     }
 
+    //dto conversion methods
     private List<PostWithCommentsDto> getPostWithCommentsDtos(List<Post> posts) {
         List<PostWithCommentsDto> postWithCommentsDtos = new ArrayList<>();
         for (Post post : posts) {
@@ -145,7 +145,6 @@ public class PostController {
 
         return postWithCommentsDto;
     }
-
     private PostWithoutCommentsDto getPostWithOutCommentsDto(Post post) {
         PostWithoutCommentsDto postWithoutCommentsDto = PostWithoutCommentsDto.builder()
                 .title(post.getTitle())

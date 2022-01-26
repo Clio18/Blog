@@ -1,12 +1,10 @@
 package com.luxcampus.Blog.service;
-
 import com.luxcampus.Blog.entity.Comment;
 import com.luxcampus.Blog.entity.Post;
 import com.luxcampus.Blog.repository.CommentRepository;
 import com.luxcampus.Blog.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

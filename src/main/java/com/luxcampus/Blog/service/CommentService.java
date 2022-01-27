@@ -18,6 +18,7 @@ public class CommentService implements CommentServiceInterface {
 
     @Override
     public void save(Long postId, Comment comment) {
+
         Post post = postRepository.getById(postId);
         comment.setPost(post);
         comment.setCreated_on(LocalDateTime.now());

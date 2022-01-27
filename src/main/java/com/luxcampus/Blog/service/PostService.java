@@ -32,6 +32,7 @@ public class PostService implements PostServiceInterface {
     }
 
     public Post findById(Long id) {
+
         Optional<Post> optionalPost = postRepository.findById(id);
         if (optionalPost.isPresent()){
             return optionalPost.get();

@@ -18,10 +18,8 @@ public class CommentService implements CommentServiceInterface {
 
     @Override
     public void save(Long postId, Comment comment) {
-        Optional<Post> optionalPost = postRepository.findById(postId);
-        if(optionalPost.isPresent()) {
-            comment.setPost(optionalPost.get());
-        }
+        Post post = postRepository.getById(postId);
+        comment.setPost(post);
         comment.setCreated_on(LocalDateTime.now());
         commentRepository.save(comment);
     }

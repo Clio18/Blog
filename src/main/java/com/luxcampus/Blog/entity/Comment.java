@@ -1,6 +1,8 @@
 package com.luxcampus.Blog.entity;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -12,8 +14,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "my_seq")
-    @SequenceGenerator(name="my_seq",sequenceName="MY_SEQ", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comment_seq")
+    @SequenceGenerator(name = "comment_seq", sequenceName = "COMMENT_SEQ", allocationSize = 1)
     private Long id;
     @Column
     private String text;

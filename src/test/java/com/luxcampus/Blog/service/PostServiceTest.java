@@ -54,6 +54,7 @@ class PostServiceTest {
                 .content("bbc.com")
                 .build();
         postService.save(post);
+
         verify(postRepository, times(1)).save(post);
     }
 
@@ -61,6 +62,7 @@ class PostServiceTest {
     void testDelete() {
         PostService postService = new PostService(postRepository);
         postService.delete(1L);
+
         verify(postRepository, times(1)).deleteById(1L);
     }
 
@@ -73,6 +75,7 @@ class PostServiceTest {
                 .content("bbc.com")
                 .build();
         postService.update(2L, post);
+
         verify(postRepository, times(1)).save(post);
     }
 
@@ -117,7 +120,6 @@ class PostServiceTest {
         assertEquals(list.get(1).getTitle(), actualPosts.get(1).getTitle());
         assertEquals(list.get(1).getContent(), actualPosts.get(1).getContent());
         assertEquals(list.get(1).getId(), actualPosts.get(1).getId());
-
 
         verify(postRepository, times(1)).findByTitleIs("news");
 
@@ -181,7 +183,6 @@ class PostServiceTest {
         assertEquals(list.get(1).getId(), actualPosts.get(1).getId());
         assertEquals(list.get(1).isStar(), actualPosts.get(1).isStar());
 
-
         verify(postRepository, times(1)).findByStarTrue();
 
     }
@@ -202,7 +203,6 @@ class PostServiceTest {
         assertEquals(one.getTitle(), actualPost.getTitle());
         assertEquals(one.getContent(), actualPost.getContent());
         assertEquals(one.isStar(), actualPost.isStar());
-
 
         verify(postRepository, times(1)).updatePostBySetStarTrue(1L);
 
@@ -225,7 +225,6 @@ class PostServiceTest {
         assertEquals(one.getTitle(), actualPost.getTitle());
         assertEquals(one.getContent(), actualPost.getContent());
         assertEquals(one.isStar(), actualPost.isStar());
-
 
         verify(postRepository, times(1)).updatePostBySetStarFalse(1L);
     }

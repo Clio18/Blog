@@ -1,8 +1,10 @@
 package com.luxcampus.Blog.service;
+
 import com.luxcampus.Blog.entity.Post;
 import com.luxcampus.Blog.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -18,15 +20,15 @@ public class PostService implements PostServiceInterface {
         return users;
     }
 
-    public void save(Post post){
-       postRepository.save(post);
+    public void save(Post post) {
+        postRepository.save(post);
     }
 
-    public void delete(Long id){
+    public void delete(Long id) {
         postRepository.deleteById(id);
     }
 
-    public void update(Long id, Post post){
+    public void update(Long id, Post post) {
         post.setId(id);
         postRepository.save(post);
     }
@@ -34,7 +36,7 @@ public class PostService implements PostServiceInterface {
     public Post findById(Long id) {
 
         Optional<Post> optionalPost = postRepository.findById(id);
-        if (optionalPost.isPresent()){
+        if (optionalPost.isPresent()) {
             return optionalPost.get();
         }
         return null;
@@ -55,7 +57,7 @@ public class PostService implements PostServiceInterface {
         return postRepository.findByStarTrue();
     }
 
-    public Post updatePostBySetStarTrue(Long id){
+    public Post updatePostBySetStarTrue(Long id) {
         return postRepository.updatePostBySetStarTrue(id);
     }
 

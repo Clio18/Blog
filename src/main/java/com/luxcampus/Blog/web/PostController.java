@@ -1,4 +1,5 @@
 package com.luxcampus.Blog.web;
+
 import com.luxcampus.Blog.entity.Comment;
 import com.luxcampus.Blog.entity.Post;
 import com.luxcampus.Blog.entity.dto.CommentWithoutPostDto;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,16 +26,22 @@ public class PostController {
     @GetMapping("/{id}/full")
     public PostWithCommentsDto findPostByIdWithComments(@PathVariable Long id) {
         Post post = postService.findById(id);
-        PostWithCommentsDto postWithCommentsDto = getPostWithCommentsDto(post);
-        logger.info("Get post {} ", postWithCommentsDto);
+        PostWithCommentsDto postWithCommentsDto = null;
+        if (post != null) {
+            logger.info("Get post {} ", postWithCommentsDto);
+            return getPostWithCommentsDto(post);
+        }
         return postWithCommentsDto;
     }
 
     @GetMapping("/{id}")
     public PostWithoutCommentsDto findPostById(@PathVariable Long id) {
         Post post = postService.findById(id);
-        PostWithoutCommentsDto postWithoutCommentsDto = getPostWithOutCommentsDto(post);
-        logger.info("Get post {} ", postWithoutCommentsDto);
+        PostWithoutCommentsDto postWithoutCommentsDto = null;
+        if (post != null) {
+            logger.info("Get post {} ", postWithoutCommentsDto);
+            return getPostWithOutCommentsDto(post);
+        }
         return postWithoutCommentsDto;
     }
 
@@ -66,13 +74,23 @@ public class PostController {
     @PutMapping("/{id}/star")
     public PostWithCommentsDto setValueForStarTrue(@PathVariable Long id) {
         Post post = postService.updatePostBySetStarTrue(id);
-        return getPostWithCommentsDto(post);
+        PostWithCommentsDto postWithCommentsDto = null;
+        if(post!=null) {
+            logger.info("Post with comment {} - setting star", post);
+            return getPostWithCommentsDto(post);
+        }
+        return postWithCommentsDto;
     }
 
     @DeleteMapping("/{id}/star")
     public PostWithCommentsDto updatePostBySetStarFalse(@PathVariable Long id) {
         Post post = postService.updatePostBySetStarFalse(id);
-        return getPostWithCommentsDto(post);
+        PostWithCommentsDto postWithCommentsDto = null;
+        if(post!=null) {
+            logger.info("Post with comment {} - removing star", post);
+            return getPostWithCommentsDto(post);
+        }
+        return postWithCommentsDto;
     }
 
     // void methods
@@ -84,11 +102,13 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
+        // TODO: 29.01.2022  checking for null and invalid data
         postService.delete(id);
     }
 
     @PutMapping("/{id}")
     public void update(@PathVariable Long id, @RequestBody Post post) {
+        // TODO: 29.01.2022  checking for null and invalid data
         postService.update(id, post);
     }
 
@@ -122,10 +142,11 @@ public class PostController {
         }
         return postWithCommentsDtos;
     }
+
     private PostWithCommentsDto getPostWithCommentsDto(Post post) {
         List<Comment> comments = post.getComments();
         List<CommentWithoutPostDto> commentWithoutPostDtos = new ArrayList<>();
-        if(comments!=null){
+        if (comments != null) {
             for (Comment comment : comments) {
                 CommentWithoutPostDto commentWithoutPostDto = CommentWithoutPostDto.builder()
                         .text(comment.getText())
@@ -145,6 +166,7 @@ public class PostController {
 
         return postWithCommentsDto;
     }
+
     private PostWithoutCommentsDto getPostWithOutCommentsDto(Post post) {
         PostWithoutCommentsDto postWithoutCommentsDto = PostWithoutCommentsDto.builder()
                 .title(post.getTitle())

@@ -1,4 +1,5 @@
 package com.luxcampus.Blog.web;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luxcampus.Blog.entity.Comment;
 import com.luxcampus.Blog.entity.Post;
@@ -14,9 +15,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -77,6 +78,10 @@ class CommentControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/posts/1/comments")
                 .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(one)))
                 .andExpect(status().isOk());
+
+        verify(commentService).save(any(Long.class), any(Comment.class));
+        verify(commentService, times(1)).save(post.getId(), one);
+
     }
 
     @Test

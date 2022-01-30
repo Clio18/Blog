@@ -9,6 +9,9 @@ import com.luxcampus.Blog.service.PostServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -24,76 +27,96 @@ public class PostController {
     private final PostServiceInterface postService;
 
     @GetMapping("/{id}/full")
-    public PostWithCommentsDto findPostByIdWithComments(@PathVariable Long id) {
+    public ResponseEntity<Object> findPostByIdWithComments(@PathVariable Long id) {
         Post post = postService.findById(id);
-        PostWithCommentsDto postWithCommentsDto = null;
-        if (post != null) {
-            logger.info("Get post {} ", postWithCommentsDto);
-            return getPostWithCommentsDto(post);
+        if (post == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Post is not found by passing id (CODE 404)\n");
         }
-        return postWithCommentsDto;
+        PostWithCommentsDto postWithCommentsDto = getPostWithCommentsDto(post);
+        logger.info("Get full post {} ", postWithCommentsDto);
+        return ResponseEntity.ok(postWithCommentsDto);
     }
 
     @GetMapping("/{id}")
-    public PostWithoutCommentsDto findPostById(@PathVariable Long id) {
+    public ResponseEntity<Object> findPostById(@PathVariable Long id) {
         Post post = postService.findById(id);
-        PostWithoutCommentsDto postWithoutCommentsDto = null;
-        if (post != null) {
-            logger.info("Get post {} ", postWithoutCommentsDto);
-            return getPostWithOutCommentsDto(post);
+        if (post == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Post is not found by passing id (CODE 404)\n");
         }
-        return postWithoutCommentsDto;
+        PostWithoutCommentsDto postWithoutCommentsDto = getPostWithOutCommentsDto(post);
+        logger.info("Get post {} ", postWithoutCommentsDto);
+        return ResponseEntity.ok(postWithoutCommentsDto);
     }
 
     @GetMapping
-    public List<PostWithCommentsDto> getAllPosts(@RequestParam(value = "title", required = false) String title,
-                                                 @RequestParam(value = "sort", required = false) String sort) {
+    public ResponseEntity<Object> getAllPosts(@RequestParam(value = "title", required = false) String title,
+                                              @RequestParam(value = "sort", required = false) String sort) {
         logger.info("getAllPostsMethod");
         if (title != null) {
             logger.info("in findAllPostsByTitle method");
             List<Post> posts = postService.findByTitleIs(title);
-            return getPostWithCommentsDtos(posts);
-        } else if (sort != null) {
+            if (posts.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Posts are not found by passing title (CODE 404)\n");
+            } else {
+                List<PostWithCommentsDto> postWithCommentsDtos = getPostWithCommentsDtos(posts);
+                return ResponseEntity.ok(postWithCommentsDtos);
+            }
+        } else if (sort !=null) {
             logger.info("in findAllPostsSortedByTitle method");
             List<Post> posts = postService.findByOrderByTitleAsc();
-            return getPostWithCommentsDtos(posts);
+            if (posts.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Posts are not found when sorting (CODE 404)\n");
+            } else {
+                List<PostWithCommentsDto> postWithCommentsDtos = getPostWithCommentsDtos(posts);
+                return ResponseEntity.ok(postWithCommentsDtos);
+            }
         } else {
             List<Post> posts = postService.getAll();
-            return getPostWithCommentsDtos(posts);
+            if (posts.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Posts are not found (CODE 404)\n");
+            } else {
+                List<PostWithCommentsDto> postWithCommentsDtos = getPostWithCommentsDtos(posts);
+                return ResponseEntity.ok(postWithCommentsDtos);
+            }
         }
     }
 
     @GetMapping("/star")
-    public List<PostWithCommentsDto> getAllPostsWithStar() {
-        logger.info("getAllPostsMethod");
+    public ResponseEntity<Object> getAllPostsWithStar() {
         logger.info("in findAllPostsByStar method");
         List<Post> posts = postService.findByStarTrue();
-        return getPostWithCommentsDtos(posts);
+        if (posts.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Posts with star are not found (CODE 404)\n");
+        } else {
+            List<PostWithCommentsDto> postWithCommentsDtos = getPostWithCommentsDtos(posts);
+            return ResponseEntity.ok(postWithCommentsDtos);
+        }
     }
 
     @PutMapping("/{id}/star")
-    public PostWithCommentsDto setValueForStarTrue(@PathVariable Long id) {
+    public ResponseEntity<Object> setValueForStarTrue(@PathVariable Long id) {
         Post post = postService.updatePostBySetStarTrue(id);
-        PostWithCommentsDto postWithCommentsDto = null;
-        if(post!=null) {
-            logger.info("Post with comment {} - setting star", post);
-            return getPostWithCommentsDto(post);
+        if (post==null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Post without star was not found (CODE 404)\n");
+        } else {
+            PostWithCommentsDto postWithCommentsDto = getPostWithCommentsDto(post);
+            logger.info("Post with comment {} - setting star", postWithCommentsDto);
+            return ResponseEntity.ok(postWithCommentsDto);
         }
-        return postWithCommentsDto;
     }
 
     @DeleteMapping("/{id}/star")
-    public PostWithCommentsDto updatePostBySetStarFalse(@PathVariable Long id) {
+    public ResponseEntity<Object> updatePostBySetStarFalse(@PathVariable Long id) {
         Post post = postService.updatePostBySetStarFalse(id);
-        PostWithCommentsDto postWithCommentsDto = null;
-        if(post!=null) {
-            logger.info("Post with comment {} - removing star", post);
-            return getPostWithCommentsDto(post);
+        if (post==null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Post with star was not found (CODE 404)\n");
+        } else {
+            PostWithCommentsDto postWithCommentsDto = getPostWithCommentsDto(post);
+            logger.info("Post with comment {} - removing star", postWithCommentsDto);
+            return ResponseEntity.ok(postWithCommentsDto);
         }
-        return postWithCommentsDto;
     }
 
-    // void methods
     @PostMapping
     public void save(@RequestBody Post post) {
         postService.save(post);
@@ -102,14 +125,16 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        // TODO: 29.01.2022  checking for null and invalid data
         postService.delete(id);
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody Post post) {
-        // TODO: 29.01.2022  checking for null and invalid data
+    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody Post post) {
+        if (post.getTitle()==null||post.getContent()==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body("The Post is missing: please provide data for update (CODE 400)\n");
+        }
         postService.update(id, post);
+        return ResponseEntity.status(HttpStatus.OK).body("Post is updated");
     }
 
     //dto conversion methods

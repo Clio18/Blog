@@ -90,7 +90,8 @@ class PostServiceTest {
         Optional<Post> optionalPost = Optional.of(post);
         when(postRepository.findById(1L)).thenReturn(optionalPost);
 
-        Post actualPost = postService.findById(1L);
+        Optional<Post> optional = postService.findById(1L);
+        Post actualPost = optionalPost.get();
         assertEquals(post.getTitle(), actualPost.getTitle());
         assertEquals(post.getContent(), actualPost.getContent());
         assertEquals(post.getId(), actualPost.getId());

@@ -33,13 +33,8 @@ public class PostService implements PostServiceInterface {
         postRepository.save(post);
     }
 
-    public Post findById(Long id) {
-
-        Optional<Post> optionalPost = postRepository.findById(id);
-        if (optionalPost.isPresent()) {
-            return optionalPost.get();
-        }
-        return null;
+    public Optional<Post> findById(Long id) {
+        return postRepository.findById(id);
     }
 
     @Override

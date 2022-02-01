@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -28,24 +29,30 @@ public class PostController {
 
     @GetMapping("/{id}/full")
     public ResponseEntity<Object> findPostByIdWithComments(@PathVariable Long id) {
-        Post post = postService.findById(id);
-        if (post == null) {
+        Optional<Post> optionalPost = postService.findById(id);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            PostWithCommentsDto postWithCommentsDto = getPostWithCommentsDto(post);
+            logger.info("Get full post {} ", postWithCommentsDto);
+            return ResponseEntity.ok(postWithCommentsDto);
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Post is not found by passing id (CODE 404)\n");
         }
-        PostWithCommentsDto postWithCommentsDto = getPostWithCommentsDto(post);
-        logger.info("Get full post {} ", postWithCommentsDto);
-        return ResponseEntity.ok(postWithCommentsDto);
+
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> findPostById(@PathVariable Long id) {
-        Post post = postService.findById(id);
-        if (post == null) {
+        Optional<Post> optionalPost = postService.findById(id);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            PostWithoutCommentsDto postWithoutCommentsDto = getPostWithOutCommentsDto(post);
+            logger.info("Get post {} ", postWithoutCommentsDto);
+            return ResponseEntity.ok(postWithoutCommentsDto);
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Post is not found by passing id (CODE 404)\n");
         }
-        PostWithoutCommentsDto postWithoutCommentsDto = getPostWithOutCommentsDto(post);
-        logger.info("Get post {} ", postWithoutCommentsDto);
-        return ResponseEntity.ok(postWithoutCommentsDto);
+
     }
 
     @GetMapping
@@ -61,7 +68,7 @@ public class PostController {
                 List<PostWithCommentsDto> postWithCommentsDtos = getPostWithCommentsDtos(posts);
                 return ResponseEntity.ok(postWithCommentsDtos);
             }
-        } else if (sort !=null) {
+        } else if (sort != null) {
             logger.info("in findAllPostsSortedByTitle method");
             List<Post> posts = postService.findByOrderByTitleAsc();
             if (posts.isEmpty()) {
@@ -96,7 +103,7 @@ public class PostController {
     @PutMapping("/{id}/star")
     public ResponseEntity<Object> setValueForStarTrue(@PathVariable Long id) {
         Post post = postService.updatePostBySetStarTrue(id);
-        if (post==null) {
+        if (post == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Post without star was not found (CODE 404)\n");
         } else {
             PostWithCommentsDto postWithCommentsDto = getPostWithCommentsDto(post);
@@ -108,7 +115,7 @@ public class PostController {
     @DeleteMapping("/{id}/star")
     public ResponseEntity<Object> updatePostBySetStarFalse(@PathVariable Long id) {
         Post post = postService.updatePostBySetStarFalse(id);
-        if (post==null) {
+        if (post == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Post with star was not found (CODE 404)\n");
         } else {
             PostWithCommentsDto postWithCommentsDto = getPostWithCommentsDto(post);
@@ -130,11 +137,11 @@ public class PostController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody Post post) {
-        if (post.getTitle()==null||post.getContent()==null){
+        if (post.getTitle() == null || post.getContent() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body("The Post is missing: please provide data for update (CODE 400)\n");
         }
         postService.update(id, post);
-        return ResponseEntity.status(HttpStatus.OK).body("Post is updated");
+        return ResponseEntity.status(HttpStatus.OK).body("Post is updated \n");
     }
 
     //dto conversion methods

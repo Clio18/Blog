@@ -3,6 +3,7 @@ package com.luxcampus.Blog.service;
 import com.luxcampus.Blog.entity.Post;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PostServiceInterface {
 
@@ -14,7 +15,7 @@ public interface PostServiceInterface {
 
     void update(Long id, Post post);
 
-    Post findById(Long id);
+    Optional<Post> findById(Long id);
 
     List<Post> findByTitleIs(String title);
 

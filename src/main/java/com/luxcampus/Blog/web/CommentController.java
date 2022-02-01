@@ -6,10 +6,14 @@ import com.luxcampus.Blog.service.CommentServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/api/v1/posts")
@@ -20,18 +24,41 @@ public class CommentController {
     private final CommentServiceInterface commentService;
 
     @GetMapping("/{id}/comments")
-    public List<CommentWithoutPostDto> findCommentsByPostId(@PathVariable Long id) {
+    public ResponseEntity<Object> findCommentsByPostId(@PathVariable Long id) {
         logger.info("Get comments");
         List<Comment> comments = commentService.findCommentsByPostId(id);
-        return getCommentWithoutPostDtos(comments);
+        if (comments.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The post was not found \n");
+        } else {
+            List<CommentWithoutPostDto> commentWithoutPostDtoList = getCommentWithoutPostDtos(comments);
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(commentWithoutPostDtoList);
+        }
     }
 
     @GetMapping("/{postId}/comments/{id}")
-    public CommentWithoutPostDto findCommentByPostIdAndCommentId(@PathVariable Long postId, @PathVariable Long id) {
+    public ResponseEntity<Object> findCommentByPostIdAndCommentId(@PathVariable Long postId, @PathVariable Long id) {
         logger.info("Get comment");
         Comment comment = commentService.findCommentByPostIdAndCommentId(postId, id);
-        return getCommentWithoutPostDto(comment);
+        if (comment == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The comment was not found by provided post and comment ids (CODE 404)\n");
+        } else {
+            CommentWithoutPostDto commentWithoutPostDto = getCommentWithoutPostDto(comment);
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(commentWithoutPostDto);
+        }
     }
+
+    @GetMapping("/comments/{id}")
+    public ResponseEntity<Object> findCommentByCommentId(@PathVariable Long id) {
+        logger.info("Get comment V2");
+        Optional<Comment> optionalComment = commentService.findById(id);
+        if (optionalComment.isPresent()) {
+            CommentWithoutPostDto commentWithoutPostDto = getCommentWithoutPostDto(optionalComment.get());
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(commentWithoutPostDto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The comment was not found by provided comment id (CODE 404)\n");
+        }
+    }
+
 
     @PostMapping("/{postId}/comments")
     public void addCommentToPostById(@PathVariable Long postId,

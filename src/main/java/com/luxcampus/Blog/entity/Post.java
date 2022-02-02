@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -27,4 +28,9 @@ public class Post {
             orphanRemoval = true)
     //@JsonManagedReference
     private List<Comment> comments;
+
+    @ManyToMany
+    @JoinTable(name = "post_tag", joinColumns = @JoinColumn(name = "id"), inverseJoinColumns = @JoinColumn(name="tagId"))
+    private Set<Tag> tags;
+
 }

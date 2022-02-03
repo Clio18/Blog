@@ -1,8 +1,8 @@
 package com.luxcampus.Blog.entity;
 
 import lombok.*;
-
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Post {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "post_seq")
     @SequenceGenerator(name = "post_seq", sequenceName = "POST_SEQ", allocationSize = 1)
@@ -30,7 +31,16 @@ public class Post {
     private List<Comment> comments;
 
     @ManyToMany
-    @JoinTable(name = "post_tag", joinColumns = @JoinColumn(name = "id"), inverseJoinColumns = @JoinColumn(name="tagId"))
-    private Set<Tag> tags;
+    @JoinTable(name = "POST_TAG",
+            joinColumns = @JoinColumn(name = "POST_id"),
+            inverseJoinColumns = @JoinColumn(name = "TAG_id"))
+    private Set<Tag> tags = new HashSet<>();
 
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 }

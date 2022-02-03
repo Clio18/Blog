@@ -2,9 +2,8 @@ package com.luxcampus.Blog.web;
 
 import com.luxcampus.Blog.entity.Comment;
 import com.luxcampus.Blog.entity.Post;
-import com.luxcampus.Blog.entity.dto.CommentWithoutPostDto;
-import com.luxcampus.Blog.entity.dto.PostWithCommentsDto;
-import com.luxcampus.Blog.entity.dto.PostWithoutCommentsDto;
+import com.luxcampus.Blog.entity.Tag;
+import com.luxcampus.Blog.entity.dto.*;
 import com.luxcampus.Blog.service.PostServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -14,9 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @RestController
@@ -35,6 +32,20 @@ public class PostController {
             PostWithCommentsDto postWithCommentsDto = getPostWithCommentsDto(post);
             logger.info("Get full post {} ", postWithCommentsDto);
             return ResponseEntity.ok(postWithCommentsDto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Post is not found by passing id (CODE 404)\n");
+        }
+
+    }
+
+    @GetMapping("/{id}/full/tags")
+    public ResponseEntity<Object> findPostByIdWithCommentsAndTags(@PathVariable Long id) {
+        Optional<Post> optionalPost = postService.findById(id);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            PostWithCommentsAndTagsDto postWithCommentsAndTagsDto = getPostWithCommentsAndTagsDto(post);
+            logger.info("Get full post {} ", postWithCommentsAndTagsDto);
+            return ResponseEntity.ok(postWithCommentsAndTagsDto);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Post is not found by passing id (CODE 404)\n");
         }
@@ -208,4 +219,44 @@ public class PostController {
                 .build();
         return postWithoutCommentsDto;
     }
+
+
+    private PostWithCommentsAndTagsDto getPostWithCommentsAndTagsDto(Post post) {
+        List<Comment> comments = post.getComments();
+        List<CommentWithoutPostDto> commentWithoutPostDtos = new ArrayList<>();
+        if (comments != null) {
+            for (Comment comment : comments) {
+                CommentWithoutPostDto commentWithoutPostDto = CommentWithoutPostDto.builder()
+                        .text(comment.getText())
+                        .id(comment.getId())
+                        .created_on(comment.getCreated_on())
+                        .build();
+                commentWithoutPostDtos.add(commentWithoutPostDto);
+            }
+        }
+        Set<Tag> tags = post.getTags();
+        Set<TagWithoutPostDto> tagWithoutPostDtos = new HashSet<>();
+        if (tags != null) {
+            for (Tag tag : tags) {
+                TagWithoutPostDto tagWithoutPostDto = TagWithoutPostDto.builder()
+                        .id(tag.getId())
+                        .name(tag.getName())
+                        .build();
+                tagWithoutPostDtos.add(tagWithoutPostDto);
+            }
+        }
+
+
+        PostWithCommentsAndTagsDto postWithCommentsAndTagDto = PostWithCommentsAndTagsDto.builder()
+                .title(post.getTitle())
+                .id(post.getId())
+                .star(post.isStar())
+                .content(post.getContent())
+                .comments(commentWithoutPostDtos)
+                .tags(tagWithoutPostDtos)
+                .build();
+
+        return postWithCommentsAndTagDto;
+    }
+
 }

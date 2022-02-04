@@ -20,5 +20,10 @@ public class TagController {
         tagServiceInterface.addTagToPost(tag, postId);
     }
 
+    @DeleteMapping (path = "/tag/{id}")
+    public void deleteTagFromPost(@PathVariable Long id){
+        tagServiceInterface.deleteTagFromPost(id);
+    }
+
 
 }

@@ -4,6 +4,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -30,7 +31,7 @@ public class Post {
     //@JsonManagedReference
     private List<Comment> comments;
 
-    @ManyToMany
+    @ManyToMany()
     @JoinTable(name = "POST_TAG",
             joinColumns = @JoinColumn(name = "POST_id"),
             inverseJoinColumns = @JoinColumn(name = "TAG_id"))
@@ -42,5 +43,18 @@ public class Post {
 
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return star == post.star && Objects.equals(id, post.id) && Objects.equals(title, post.title) && Objects.equals(content, post.content);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, content, star);
     }
 }

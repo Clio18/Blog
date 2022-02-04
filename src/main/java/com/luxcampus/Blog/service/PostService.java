@@ -1,12 +1,15 @@
 package com.luxcampus.Blog.service;
 
 import com.luxcampus.Blog.entity.Post;
+import com.luxcampus.Blog.entity.Tag;
 import com.luxcampus.Blog.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +27,16 @@ public class PostService implements PostServiceInterface {
         postRepository.save(post);
     }
 
+    @Transactional
     public void delete(Long id) {
-        postRepository.deleteById(id);
+        Post post = postRepository.getById(id);
+        Set<Tag> tags = post.getTags();
+        if (!tags.isEmpty()){
+            for (Tag tag : tags) {
+                tag.getPosts().remove(post);
+            }
+        }
+        postRepository.delete(post);
     }
 
     public void update(Long id, Post post) {

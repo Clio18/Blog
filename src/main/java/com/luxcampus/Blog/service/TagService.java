@@ -25,7 +25,14 @@ public class TagService implements TagServiceInterface {
     @Override
     public void addTagToPost(Tag tag, Long postId) {
         Post post = postRepository.getById(postId);
-
+        //check if this tag is already exist in post
+        Set<Tag> tagsInPost = post.getTags();
+        for (Tag tagInPost : tagsInPost) {
+            if(tagInPost.getName().equals(tag.getName())){
+                return;
+            }
+        }
+        //check if this a new tag
         List<Tag> tags = tagRepository.findAll();
         for (Tag existTag : tags) {
             if (tag.getName().equals(existTag.getName())) {

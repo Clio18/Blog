@@ -50,7 +50,7 @@ public class Post {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, content, star, comments, tags);
+        return Objects.hash(id, title, content, star, comments);
     }
 
     @Override

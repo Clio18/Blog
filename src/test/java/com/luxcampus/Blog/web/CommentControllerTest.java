@@ -40,7 +40,7 @@ class CommentControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName(value = "Test GET /api/v1/posts/{postId}/comments and return comments")
+    @DisplayName(value = "Test GET /api/v1/comments/posts/{postId} and return comments")
     void findCommentsByPostId() throws Exception {
         //prepare
         Comment one = Comment.builder()
@@ -56,7 +56,7 @@ class CommentControllerTest {
         when(commentService.findCommentsByPostId(1L))
                 .thenReturn(comments);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/1/comments")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/comments/posts/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value("1"))
@@ -68,7 +68,7 @@ class CommentControllerTest {
     }
 
     @Test
-    @DisplayName(value = "Test GET /api/v1/posts/{NOT EXIST}/comments and return NOT FOUND")
+    @DisplayName(value = "Test GET /api/v1/comments/posts/{NOT EXIST} and return NOT FOUND")
     void findCommentsByPostIdWhichIsNotExist() throws Exception {
 
         List<Comment> comments = new ArrayList<>();
@@ -76,7 +76,7 @@ class CommentControllerTest {
         when(commentService.findCommentsByPostId(100L))
                 .thenReturn(comments);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/100/comments")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/comments/posts/100")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
@@ -84,7 +84,7 @@ class CommentControllerTest {
     }
 
     @Test
-    @DisplayName(value = "Test POST /api/v1/posts/1/comments and set comment to post")
+    @DisplayName(value = "Test POST /api/v1/comments/{postId} and set comment to post")
     void addCommentToPostById() throws Exception {
         Post post = Post.builder()
                 .id(1L)
@@ -98,7 +98,7 @@ class CommentControllerTest {
                 .post(post)
                 .build();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/posts/1/comments")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/comments/1")
                 .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(one)))
                 .andExpect(status().isOk());
 
@@ -108,7 +108,7 @@ class CommentControllerTest {
     }
 
     @Test
-    @DisplayName(value = "Test GET /api/v1/posts/{postId}/comments/{id} and return comment")
+    @DisplayName(value = "Test GET /api/v1/comments/posts/{postId}/comments/{id} and return comment")
     void findCommentByPostIdAndCommentId() throws Exception {
         Comment one = Comment.builder()
                 .id(1L)
@@ -118,7 +118,7 @@ class CommentControllerTest {
         when(commentService.findCommentByPostIdAndCommentId(1L, 1L))
                 .thenReturn(one);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/1/comments/1")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/comments/posts/1/comments/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("1"))
@@ -128,7 +128,7 @@ class CommentControllerTest {
     }
 
     @Test
-    @DisplayName(value = "Test GET /api/v1/posts/comments/{id} and return comment")
+    @DisplayName(value = "Test GET /api/v1/comments/{id} and return comment")
     void findCommentByCommentId() throws Exception {
         Comment one = Comment.builder()
                 .id(1L)
@@ -140,7 +140,7 @@ class CommentControllerTest {
         when(commentService.findById(1L))
                 .thenReturn(commentOptional);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/comments/1")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/comments/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("1"))
@@ -150,7 +150,7 @@ class CommentControllerTest {
     }
 
     @Test
-    @DisplayName(value = "Test GET /api/v1/posts/comments/NOE EXIST and return NOT FOUND")
+    @DisplayName(value = "Test GET /api/v1/comments/NOT EXIST and return NOT FOUND")
     void findCommentByCommentIdWhichIsNotExist() throws Exception {
 
         Optional<Comment> commentOptional = Optional.empty();
@@ -158,7 +158,7 @@ class CommentControllerTest {
         when(commentService.findById(1L))
                 .thenReturn(commentOptional);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/comments/100")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/comments/100")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 

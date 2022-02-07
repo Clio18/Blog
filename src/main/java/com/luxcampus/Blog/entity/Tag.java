@@ -56,6 +56,6 @@ public class Tag {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, posts);
+        return Objects.hash(id, name);
     }
 }

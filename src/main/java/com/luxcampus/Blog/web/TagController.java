@@ -8,19 +8,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/api/v1/posts")
+@RequestMapping(path = "/api/v1/tags")
 @RequiredArgsConstructor
 public class TagController {
 
     Logger logger = LoggerFactory.getLogger(getClass());
     private final TagServiceInterface tagServiceInterface;
 
-    @PostMapping(path = "/{postId}/tags")
+    @PostMapping(path = "/{postId}")
     public void addTagToPost(@RequestBody Tag tag, @PathVariable Long postId){
         tagServiceInterface.addTagToPost(tag, postId);
     }
 
-    @DeleteMapping (path = "/tag/{id}")
+    @DeleteMapping (path = "/{id}")
     public void deleteTagFromPost(@PathVariable Long id){
         tagServiceInterface.deleteTagFromPost(id);
     }

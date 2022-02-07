@@ -16,17 +16,17 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "/api/v1/posts")
+@RequestMapping(path = "/api/v1/comments")
 @RequiredArgsConstructor
 public class CommentController {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CommentServiceInterface commentService;
 
-    @GetMapping("/{id}/comments")
-    public ResponseEntity<Object> findCommentsByPostId(@PathVariable Long id) {
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<Object> findCommentsByPostId(@PathVariable Long postId) {
         logger.info("Get comments");
-        List<Comment> comments = commentService.findCommentsByPostId(id);
+        List<Comment> comments = commentService.findCommentsByPostId(postId);
         if (comments.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The post was not found \n");
         } else {
@@ -35,7 +35,7 @@ public class CommentController {
         }
     }
 
-    @GetMapping("/{postId}/comments/{id}")
+    @GetMapping("posts/{postId}/comments/{id}")
     public ResponseEntity<Object> findCommentByPostIdAndCommentId(@PathVariable Long postId, @PathVariable Long id) {
         logger.info("Get comment");
         Comment comment = commentService.findCommentByPostIdAndCommentId(postId, id);
@@ -47,7 +47,7 @@ public class CommentController {
         }
     }
 
-    @GetMapping("/comments/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Object> findCommentByCommentId(@PathVariable Long id) {
         logger.info("Get comment V2");
         Optional<Comment> optionalComment = commentService.findById(id);
@@ -60,7 +60,7 @@ public class CommentController {
     }
 
 
-    @PostMapping("/{postId}/comments")
+    @PostMapping("/{postId}")
     public void addCommentToPostById(@PathVariable Long postId,
                                      @RequestBody Comment comment) {
         logger.info("Save comment");

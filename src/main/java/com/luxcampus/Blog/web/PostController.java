@@ -93,8 +93,8 @@ public class PostController {
             if (posts.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("The Posts are not found (CODE 404)\n");
             } else {
-                List<PostWithCommentsDto> postWithCommentsDtos = getPostWithCommentsDtos(posts);
-                return ResponseEntity.ok(postWithCommentsDtos);
+                List<PostWithCommentsAndTagsDto> postWithCommentsAndTagsDtos = getPostsWithCommentsAndTagsDto(posts);
+                return ResponseEntity.ok(postWithCommentsAndTagsDtos);
             }
         }
     }
@@ -257,6 +257,14 @@ public class PostController {
                 .build();
 
         return postWithCommentsAndTagDto;
+    }
+
+    private List<PostWithCommentsAndTagsDto> getPostsWithCommentsAndTagsDto(List<Post> posts){
+        List<PostWithCommentsAndTagsDto> list = new ArrayList<>();
+        for (Post post : posts) {
+            list.add(getPostWithCommentsAndTagsDto(post));
+        }
+        return list;
     }
 
 }

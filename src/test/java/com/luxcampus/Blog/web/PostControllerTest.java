@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luxcampus.Blog.entity.Post;
 import com.luxcampus.Blog.service.CommentService;
 import com.luxcampus.Blog.service.PostService;
+import com.luxcampus.Blog.service.TagService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,8 @@ class PostControllerTest {
 
     @MockBean
     private CommentService commentService;
+    @MockBean
+    private TagService tagService;
 
     @Test
     @DisplayName(value = "Test GET /api/v1/posts/1 and return defined post")

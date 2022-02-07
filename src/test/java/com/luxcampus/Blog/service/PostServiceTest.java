@@ -1,12 +1,14 @@
 package com.luxcampus.Blog.service;
 
 import com.luxcampus.Blog.entity.Post;
+import com.luxcampus.Blog.entity.Tag;
 import com.luxcampus.Blog.repository.PostRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,10 +62,19 @@ class PostServiceTest {
 
     @Test
     void testDelete() {
+        Post post = Post.builder()
+                .id(1L)
+                .title("news")
+                .content("bbc.com")
+                .tags(new HashSet<Tag>())
+                .build();
+        when(postRepository.getById(1L)).thenReturn(post);
+
         PostService postService = new PostService(postRepository);
         postService.delete(1L);
 
-        verify(postRepository, times(1)).deleteById(1L);
+        verify(postRepository, times(1)).delete(post);
+        verify(postRepository, times(1)).getById(1L);
     }
 
     @Test

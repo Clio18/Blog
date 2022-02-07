@@ -2,10 +2,7 @@ package com.luxcampus.Blog.entity;
 
 import lombok.*;
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Builder
@@ -26,12 +23,10 @@ public class Post {
     @Column(columnDefinition = "boolean default false")
     private boolean star;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    //@JsonManagedReference
-    private List<Comment> comments;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
-    @ManyToMany()
+    @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name = "POST_TAG",
             joinColumns = @JoinColumn(name = "POST_id"),
             inverseJoinColumns = @JoinColumn(name = "TAG_id"))
@@ -50,11 +45,23 @@ public class Post {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
-        return star == post.star && Objects.equals(id, post.id) && Objects.equals(title, post.title) && Objects.equals(content, post.content);
+        return star == post.star && Objects.equals(id, post.id) && Objects.equals(title, post.title) && Objects.equals(content, post.content) && Objects.equals(comments, post.comments) && Objects.equals(tags, post.tags);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, content, star);
+        return Objects.hash(id, title, content, star, comments, tags);
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", star=" + star +
+                ", comments=" + comments.size() +
+                ", tags=" + tags.size() +
+                '}';
     }
 }

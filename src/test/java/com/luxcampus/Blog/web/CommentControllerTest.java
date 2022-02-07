@@ -6,6 +6,7 @@ import com.luxcampus.Blog.entity.Post;
 import com.luxcampus.Blog.entity.dto.CommentWithoutPostDto;
 import com.luxcampus.Blog.service.CommentService;
 import com.luxcampus.Blog.service.PostService;
+import com.luxcampus.Blog.service.TagService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ class CommentControllerTest {
     private CommentService commentService;
     @MockBean
     private PostService postService;
+    @MockBean
+    private TagService tagService;
     @Autowired
     private ObjectMapper objectMapper;
 

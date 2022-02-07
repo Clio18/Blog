@@ -10,10 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,7 +65,6 @@ class TagServiceTest {
                 .name("Juve")
                 .posts(new ArrayList<Post>())
                 .build();
-        Set<Tag> tags = Set.of(tag1, tag2);
 
         Post one = Post.builder()
                 .id(1L)
@@ -84,17 +80,22 @@ class TagServiceTest {
                 .tags(new HashSet<Tag>())
                 .build();
 
-        List<Post> posts = List.of(one, two);
+        tag1.getPosts().add(one);
+        tag1.getPosts().add(two);
+        tag2.getPosts().add(one);
+        tag2.getPosts().add(two);
 
-        tag1.setPosts(posts);
-        tag2.setPosts(posts);
-        one.setTags(tags);
-        two.setTags(tags);
+        one.getTags().add(tag1);
+        one.getTags().add(tag2);
+        two.getTags().add(tag1);
+        two.getTags().add(tag2);
 
         List<Post> postsWithTags = List.of(one, two);
 
+        Optional<Tag> optionalTag = Optional.of(tag1);
+
         when(postRepository.findAll()).thenReturn(postsWithTags);
-        when(tagRepository.getById(1L)).thenReturn(tag1);
+        when(tagRepository.findById(1L)).thenReturn(optionalTag);
 
         TagService tagService = new TagService(postRepository, tagRepository);
 

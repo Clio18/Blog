@@ -21,7 +21,7 @@ public class Tag {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column
+    @Column(unique = true)
     private String name;
 
     @ManyToMany
@@ -51,11 +51,11 @@ public class Tag {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tag tag = (Tag) o;
-        return Objects.equals(id, tag.id) && Objects.equals(name, tag.name);
+        return Objects.equals(id, tag.id) && Objects.equals(name, tag.name) && Objects.equals(posts, tag.posts);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id, name, posts);
     }
 }

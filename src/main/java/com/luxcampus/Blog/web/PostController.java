@@ -24,7 +24,7 @@ public class PostController {
 
     private final PostServiceInterface postService;
 
-    @GetMapping("/{id}/full")
+    @GetMapping("/{id}/comments")
     public ResponseEntity<Object> findPostByIdWithComments(@PathVariable Long id) {
         Optional<Post> optionalPost = postService.findById(id);
         if (optionalPost.isPresent()) {
@@ -38,7 +38,7 @@ public class PostController {
 
     }
 
-    @GetMapping("/{id}/full/tags")
+    @GetMapping("/{id}/full")
     public ResponseEntity<Object> findPostByIdWithCommentsAndTags(@PathVariable Long id) {
         Optional<Post> optionalPost = postService.findById(id);
         if (optionalPost.isPresent()) {

@@ -59,4 +59,9 @@ public class TagService implements TagServiceInterface {
             tagRepository.delete(tag);
         }
     }
+
+    @Override
+    public List<Tag> getAllTags() {
+        return tagRepository.findAll();
+    }
 }

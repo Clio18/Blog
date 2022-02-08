@@ -135,10 +135,21 @@ public class PostController {
         }
     }
 
+    @GetMapping("/tags/{tags}")
+    public ResponseEntity<List<PostWithCommentsAndTagsDto>> getPostsByTags(@PathVariable List<String> tags) {
+        Set<Post> posts = postService.getPostsByTags(tags);
+        List<PostWithCommentsAndTagsDto> postWithCommentsAndTagsDtos = new ArrayList<>(posts.size());
+        for (Post post : posts) {
+            postWithCommentsAndTagsDtos.add(getPostWithCommentsAndTagsDto(post));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(postWithCommentsAndTagsDtos);
+    }
+
     @PostMapping
-    public void save(@RequestBody Post post) {
+    public ResponseEntity<Post> save(@RequestBody Post post) {
         postService.save(post);
         logger.info("Add post {} ", post);
+        return ResponseEntity.status(HttpStatus.OK).body(post);
     }
 
     @DeleteMapping("/{id}")
@@ -157,20 +168,18 @@ public class PostController {
 
     //dto conversion methods
     private List<PostWithCommentsDto> getPostWithCommentsDtos(List<Post> posts) {
-        List<PostWithCommentsDto> postWithCommentsDtos = new ArrayList<>();
+        List<PostWithCommentsDto> postWithCommentsDtos = new ArrayList<>(posts.size());
         for (Post post : posts) {
             List<Comment> comments = post.getComments();
-            List<CommentWithoutPostDto> commentWithoutPostDtos = new ArrayList<>();
+            List<CommentWithoutPostDto> commentWithoutPostDtos = new ArrayList<>(comments.size());
 
-            if (comments != null) {
-                for (Comment comment : comments) {
-                    CommentWithoutPostDto commentWithoutPostDto = CommentWithoutPostDto.builder()
-                            .created_on(comment.getCreated_on())
-                            .id(comment.getId())
-                            .text(comment.getText())
-                            .build();
-                    commentWithoutPostDtos.add(commentWithoutPostDto);
-                }
+            for (Comment comment : comments) {
+                CommentWithoutPostDto commentWithoutPostDto = CommentWithoutPostDto.builder()
+                        .created_on(comment.getCreated_on())
+                        .id(comment.getId())
+                        .text(comment.getText())
+                        .build();
+                commentWithoutPostDtos.add(commentWithoutPostDto);
             }
 
             PostWithCommentsDto postWithCommentsDto = PostWithCommentsDto.builder()
@@ -188,16 +197,14 @@ public class PostController {
 
     private PostWithCommentsDto getPostWithCommentsDto(Post post) {
         List<Comment> comments = post.getComments();
-        List<CommentWithoutPostDto> commentWithoutPostDtos = new ArrayList<>();
-        if (comments != null) {
-            for (Comment comment : comments) {
-                CommentWithoutPostDto commentWithoutPostDto = CommentWithoutPostDto.builder()
-                        .text(comment.getText())
-                        .id(comment.getId())
-                        .created_on(comment.getCreated_on())
-                        .build();
-                commentWithoutPostDtos.add(commentWithoutPostDto);
-            }
+        List<CommentWithoutPostDto> commentWithoutPostDtos = new ArrayList<>(comments.size());
+        for (Comment comment : comments) {
+            CommentWithoutPostDto commentWithoutPostDto = CommentWithoutPostDto.builder()
+                    .text(comment.getText())
+                    .id(comment.getId())
+                    .created_on(comment.getCreated_on())
+                    .build();
+            commentWithoutPostDtos.add(commentWithoutPostDto);
         }
         PostWithCommentsDto postWithCommentsDto = PostWithCommentsDto.builder()
                 .title(post.getTitle())
@@ -223,8 +230,7 @@ public class PostController {
 
     private PostWithCommentsAndTagsDto getPostWithCommentsAndTagsDto(Post post) {
         List<Comment> comments = post.getComments();
-        List<CommentWithoutPostDto> commentWithoutPostDtos = new ArrayList<>();
-        if (comments != null) {
+        List<CommentWithoutPostDto> commentWithoutPostDtos = new ArrayList<>(comments.size());
             for (Comment comment : comments) {
                 CommentWithoutPostDto commentWithoutPostDto = CommentWithoutPostDto.builder()
                         .text(comment.getText())
@@ -232,7 +238,6 @@ public class PostController {
                         .created_on(comment.getCreated_on())
                         .build();
                 commentWithoutPostDtos.add(commentWithoutPostDto);
-            }
         }
         Set<Tag> tags = post.getTags();
         Set<TagWithoutPostDto> tagWithoutPostDtos = new HashSet<>();
@@ -259,8 +264,8 @@ public class PostController {
         return postWithCommentsAndTagDto;
     }
 
-    private List<PostWithCommentsAndTagsDto> getPostsWithCommentsAndTagsDto(List<Post> posts){
-        List<PostWithCommentsAndTagsDto> list = new ArrayList<>();
+    private List<PostWithCommentsAndTagsDto> getPostsWithCommentsAndTagsDto(List<Post> posts) {
+        List<PostWithCommentsAndTagsDto> list = new ArrayList<>(posts.size());
         for (Post post : posts) {
             list.add(getPostWithCommentsAndTagsDto(post));
         }

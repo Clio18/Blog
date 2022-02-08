@@ -20,22 +20,24 @@ import java.util.Set;
 public class TagController {
 
     Logger logger = LoggerFactory.getLogger(getClass());
-    private final TagServiceInterface tagServiceInterface;
+    private final TagServiceInterface tagService;
 
     @PostMapping(path = "/{postId}")
-    public void addTagToPost(@RequestBody Tag tag, @PathVariable Long postId){
-        tagServiceInterface.addTagToPost(tag, postId);
+    public ResponseEntity<TagWithoutPostDto> addTagToPost(@RequestBody Tag tag, @PathVariable Long postId){
+        tagService.addTagToPost(tag, postId);
+        TagWithoutPostDto tagWithoutPostDto = getTagWithOutPostDto(tag);
+        return ResponseEntity.status(HttpStatus.OK).body(tagWithoutPostDto);
     }
 
     @DeleteMapping (path = "/{id}")
     public void deleteTagFromPost(@PathVariable Long id){
-        tagServiceInterface.deleteTagFromPost(id);
+        tagService.deleteTagFromPost(id);
     }
 
     @GetMapping
     public ResponseEntity<Object> getAllTags(){
-       List<Tag> tags = tagServiceInterface.getAllTags();
-       List<TagWithoutPostDto> tagWithoutPostDtos = new ArrayList<>();
+       List<Tag> tags = tagService.getAllTags();
+       List<TagWithoutPostDto> tagWithoutPostDtos = new ArrayList<>(tags.size());
         for (Tag tag : tags) {
             tagWithoutPostDtos.add(getTagWithOutPostDto(tag));
         }

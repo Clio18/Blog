@@ -72,4 +72,9 @@ public class PostService implements PostServiceInterface {
         return postRepository.updatePostBySetStarFalse(id);
     }
 
+    @Override
+    public Set<Post> getPostsByTags(List<String> tags) {
+        return postRepository.findPostsByTags(tags);
+    }
+
 }

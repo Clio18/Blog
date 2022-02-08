@@ -61,10 +61,12 @@ public class CommentController {
 
 
     @PostMapping("/{postId}")
-    public void addCommentToPostById(@PathVariable Long postId,
+    public ResponseEntity<CommentWithoutPostDto> addCommentToPostById(@PathVariable Long postId,
                                      @RequestBody Comment comment) {
         logger.info("Save comment");
         commentService.save(postId, comment);
+        CommentWithoutPostDto commentWithoutPostDto = getCommentWithoutPostDto(comment);
+        return ResponseEntity.status(HttpStatus.OK).body(commentWithoutPostDto);
 
     }
 
@@ -78,16 +80,14 @@ public class CommentController {
     }
 
     private List<CommentWithoutPostDto> getCommentWithoutPostDtos(List<Comment> comments) {
-        List<CommentWithoutPostDto> commentWithoutPostDtos = new ArrayList<>();
-        if (comments != null) {
-            for (Comment comment : comments) {
-                CommentWithoutPostDto commentWithoutPostDto = CommentWithoutPostDto.builder()
-                        .id(comment.getId())
-                        .created_on(comment.getCreated_on())
-                        .text(comment.getText())
-                        .build();
-                commentWithoutPostDtos.add(commentWithoutPostDto);
-            }
+        List<CommentWithoutPostDto> commentWithoutPostDtos = new ArrayList<>(comments.size());
+        for (Comment comment : comments) {
+            CommentWithoutPostDto commentWithoutPostDto = CommentWithoutPostDto.builder()
+                    .id(comment.getId())
+                    .created_on(comment.getCreated_on())
+                    .text(comment.getText())
+                    .build();
+            commentWithoutPostDtos.add(commentWithoutPostDto);
         }
         return commentWithoutPostDtos;
     }

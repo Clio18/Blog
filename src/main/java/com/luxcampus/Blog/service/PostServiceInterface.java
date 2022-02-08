@@ -4,6 +4,7 @@ import com.luxcampus.Blog.entity.Post;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface PostServiceInterface {
 
@@ -27,4 +28,6 @@ public interface PostServiceInterface {
 
     Post updatePostBySetStarFalse(Long id);
 
+    Set<Post> getPostsByTags(List<String> tags);
 }
+

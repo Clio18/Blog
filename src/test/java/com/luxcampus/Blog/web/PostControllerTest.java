@@ -1,7 +1,9 @@
 package com.luxcampus.Blog.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.luxcampus.Blog.entity.Comment;
 import com.luxcampus.Blog.entity.Post;
+import com.luxcampus.Blog.entity.Tag;
 import com.luxcampus.Blog.service.CommentService;
 import com.luxcampus.Blog.service.PostService;
 import com.luxcampus.Blog.service.TagService;
@@ -17,10 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,11 +32,10 @@ class PostControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-    @MockBean
-    private PostService postService;
     @Autowired
     private ObjectMapper objectMapper;
-
+    @MockBean
+    private PostService postService;
     @MockBean
     private CommentService commentService;
     @MockBean
@@ -114,10 +112,12 @@ class PostControllerTest {
                 .id(1L)
                 .title("news")
                 .content("bbc.com")
+                .comments(new ArrayList<Comment>())
                 .build();
         Post two = Post.builder()
                 .id(2L)
                 .title("sport")
+                .comments(new ArrayList<Comment>())
                 .content("football.com")
                 .build();
         List<Post> posts = Arrays.asList(one, two);
@@ -212,10 +212,12 @@ class PostControllerTest {
                 .id(1L)
                 .title("news")
                 .content("bbc.com")
+                .comments(new ArrayList<Comment>())
                 .build();
         Post two = Post.builder()
                 .id(2L)
                 .title("news")
+                .comments(new ArrayList<Comment>())
                 .content("football.com")
                 .build();
 
@@ -243,11 +245,13 @@ class PostControllerTest {
                 .id(1L)
                 .title("B")
                 .content("bbc.com")
+                .comments(new ArrayList<Comment>())
                 .build();
         Post two = Post.builder()
                 .id(2L)
                 .title("A")
                 .content("football.com")
+                .comments(new ArrayList<Comment>())
                 .build();
 
         List<Post> posts = Arrays.asList(one, two);
@@ -272,12 +276,14 @@ class PostControllerTest {
                 .id(1L)
                 .title("news")
                 .content("bbc.com")
+                .comments(new ArrayList<Comment>())
                 .star(true)
                 .build();
         Post two = Post.builder()
                 .id(2L)
                 .title("sport")
                 .content("football.com")
+                .comments(new ArrayList<Comment>())
                 .star(true)
                 .build();
         List<Post> posts = Arrays.asList(one, two);
@@ -305,6 +311,7 @@ class PostControllerTest {
                 .id(1L)
                 .title("news")
                 .content("bbc.com")
+                .comments(new ArrayList<Comment>())
                 .star(true)
                 .build();
         when(postService.updatePostBySetStarTrue(1L)).thenReturn(one);
@@ -326,6 +333,7 @@ class PostControllerTest {
                 .id(1L)
                 .title("news")
                 .content("bbc.com")
+                .comments(new ArrayList<Comment>())
                 .star(false)
                 .build();
         when(postService.updatePostBySetStarFalse(1L)).thenReturn(one);
@@ -337,5 +345,60 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.star").value(false));
 
         verify(postService, times(1)).updatePostBySetStarFalse(1L);
+    }
+
+    @Test
+    @DisplayName(value = "Test GET /api/v1/posts/tags/football, sport: get posts by tags")
+    void getPostsByTags() throws Exception {
+        Post one = Post.builder()
+                .id(1L)
+                .title("news")
+                .content("bbc.com")
+                .tags(new HashSet<Tag>())
+                .star(true)
+                .comments(new ArrayList<Comment>())
+                .build();
+        Post two = Post.builder()
+                .id(2L)
+                .title("sport")
+                .content("football.com")
+                .tags(new HashSet<Tag>())
+                .star(true)
+                .comments(new ArrayList<Comment>())
+                .build();
+
+        Tag sport = Tag.builder()
+                .name("sport")
+                .posts(new ArrayList<Post>())
+                .build();
+        Tag box = Tag.builder()
+                .name("box")
+                .posts(new ArrayList<Post>())
+                .build();
+
+        one.getTags().add(sport);
+        two.getTags().add(box);
+        sport.getPosts().add(one);
+        sport.getPosts().add(two);
+
+        List<String> tagsName = Arrays.asList(sport.getName(),box.getName());
+        Set<Post> postSet = new HashSet<>();
+        postSet.add(one);
+        postSet.add(two);
+
+        when(postService.getPostsByTags(tagsName)).thenReturn(postSet);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/tags/sport,box")
+        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(hasSize(2)))
+
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].title").value("news"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].content").value("bbc.com"))
+
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("sport"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("football.com"));
+
+        verify(postService, times(1)).getPostsByTags(tagsName);
     }
 }

@@ -7,7 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luxcampus.Blog.domain.Client;
 import com.luxcampus.Blog.domain.Role;
-import com.luxcampus.Blog.service.ClientService;
+import com.luxcampus.Blog.service.ClientServiceInterface;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,28 +29,28 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class ClientController {
-    private final ClientService clientService;
+    private final ClientServiceInterface clientServiceInterface;
 
     @GetMapping("/clients")
     public ResponseEntity<List<Client>> getClients(){
-        return ResponseEntity.ok().body(clientService.getClients());
+        return ResponseEntity.ok().body(clientServiceInterface.getClients());
     }
 
     @PostMapping("/clients")
     public ResponseEntity<Client> saveClient(@RequestBody Client client){
         //it is better to return status create
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/users").toUriString());
-        return ResponseEntity.created(uri).body(clientService.saveClient(client));
+        return ResponseEntity.created(uri).body(clientServiceInterface.saveClient(client));
     }
     @PostMapping("/roles")
     public ResponseEntity<Role> saveRole(@RequestBody Role role){
         // TODO: 11.02.2022 make the same return status as above
-        return ResponseEntity.ok().body(clientService.saveRole(role));
+        return ResponseEntity.ok().body(clientServiceInterface.saveRole(role));
     }
 
     @PostMapping("/form")
     public ResponseEntity<?> addRoleToClient(@RequestBody RoleToClientForm form){
-        clientService.addRoleToClient(form.getClientname(), form.getRolename());
+        clientServiceInterface.addRoleToClient(form.getClientname(), form.getRolename());
         return ResponseEntity.ok().build();
     }
 
@@ -64,7 +64,7 @@ public class ClientController {
                 JWTVerifier verifier = JWT.require(algorithm).build();
                 DecodedJWT decodedJWT = verifier.verify(refresh_token);
                 String clientname = decodedJWT.getSubject();
-                Client client = clientService.getClient(clientname);
+                Client client = clientServiceInterface.getClient(clientname);
                 String access_token = JWT.create()
                         .withSubject(client.getClientname())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10*60*1000))

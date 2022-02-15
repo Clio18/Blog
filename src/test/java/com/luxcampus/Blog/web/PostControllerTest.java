@@ -4,17 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luxcampus.Blog.entity.Comment;
 import com.luxcampus.Blog.entity.Post;
 import com.luxcampus.Blog.entity.Tag;
-import com.luxcampus.Blog.service.CommentService;
-import com.luxcampus.Blog.service.PostService;
-import com.luxcampus.Blog.service.TagService;
+import com.luxcampus.Blog.entity.dto.PostWithCommentsAndTagsDto;
+import com.luxcampus.Blog.entity.dto.PostWithCommentsDto;
+import com.luxcampus.Blog.service.impl.ClientService;
+import com.luxcampus.Blog.service.impl.CommentService;
+import com.luxcampus.Blog.service.impl.PostService;
+import com.luxcampus.Blog.service.impl.TagService;
+import com.luxcampus.Blog.util.UtilService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -27,7 +29,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest (value =  PostController.class, useDefaultFilters = false)
 class PostControllerTest {
 
     @Autowired
@@ -40,6 +42,8 @@ class PostControllerTest {
     private CommentService commentService;
     @MockBean
     private TagService tagService;
+    @MockBean
+    private ClientService clientService;
 
     @Test
     @DisplayName(value = "Test GET /api/v1/posts/1 and return defined post")
@@ -79,7 +83,7 @@ class PostControllerTest {
     @Test
     @DisplayName(value = "Test DELETE /api/v1/posts/NOT_EXIST/star and return NOT FOUND")
     void testDeleteStarFromPostByIdWhichIsNotExist() throws Exception {
-        Post post = null;
+        PostWithCommentsDto post = null;
         when(postService.updatePostBySetStarFalse(100L))
                 .thenReturn(post);
 
@@ -93,7 +97,7 @@ class PostControllerTest {
     @Test
     @DisplayName(value = "Test PUT /api/v1/posts/NOT_EXIST/star and return NOT FOUND")
     void testSetStarFromPostByIdWhichIsNotExist() throws Exception {
-        Post post = null;
+        PostWithCommentsDto post = null;
         when(postService.updatePostBySetStarTrue(100L))
                 .thenReturn(post);
 
@@ -121,7 +125,7 @@ class PostControllerTest {
                 .content("football.com")
                 .build();
         List<Post> posts = Arrays.asList(one, two);
-        when(postService.getAll())
+        when(postService.findAll())
                 .thenReturn(posts);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/")
@@ -132,27 +136,27 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].title").value("sport"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].content").value("football.com"));
 
-        verify(postService, times(1)).getAll();
+        verify(postService, times(1)).findAll();
     }
 
     @Test
     @DisplayName(value = "Test GET /api/v1/posts and return not found")
     void testFindAllButNotFound () throws Exception {
         List<Post> posts = new ArrayList<>();
-        when(postService.getAll())
+        when(postService.findAll())
                 .thenReturn(posts);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
-        verify(postService, times(1)).getAll();
+        verify(postService, times(1)).findAll();
     }
 
     @Test
     @DisplayName(value = "Test GET /api/v1/posts/star and return not found")
     void testFindAllWithStarButNotFound () throws Exception {
-        List<Post> posts = new ArrayList<>();
+        List<PostWithCommentsDto> posts = new ArrayList<>();
         when(postService.findByStarTrue())
                 .thenReturn(posts);
 
@@ -222,9 +226,10 @@ class PostControllerTest {
                 .build();
 
         List<Post> posts = Arrays.asList(one, two);
+        List<PostWithCommentsDto> postWithCommentsDtos = UtilService.getPostsWithCommentsDtos(posts);
 
         when(postService.findByTitleIs("news"))
-                .thenReturn(posts);
+                .thenReturn(postWithCommentsDtos);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts?title=news")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -255,10 +260,10 @@ class PostControllerTest {
                 .build();
 
         List<Post> posts = Arrays.asList(one, two);
-
+        List<PostWithCommentsDto> postWithCommentsDtos = UtilService.getPostsWithCommentsDtos(posts);
 
         when(postService.findByOrderByTitleAsc())
-                .thenReturn(posts);
+                .thenReturn(postWithCommentsDtos);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts?sort=A")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -287,8 +292,10 @@ class PostControllerTest {
                 .star(true)
                 .build();
         List<Post> posts = Arrays.asList(one, two);
+        List<PostWithCommentsDto> postWithCommentsDtos = UtilService.getPostsWithCommentsDtos(posts);
+
         when(postService.findByStarTrue())
-                .thenReturn(posts);
+                .thenReturn(postWithCommentsDtos);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/star")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -314,7 +321,8 @@ class PostControllerTest {
                 .comments(new ArrayList<Comment>())
                 .star(true)
                 .build();
-        when(postService.updatePostBySetStarTrue(1L)).thenReturn(one);
+        PostWithCommentsDto postWithCommentsDto = UtilService.getPostWithCommentsDto(one);
+        when(postService.updatePostBySetStarTrue(1L)).thenReturn(postWithCommentsDto);
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/posts/1/star")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -336,7 +344,8 @@ class PostControllerTest {
                 .comments(new ArrayList<Comment>())
                 .star(false)
                 .build();
-        when(postService.updatePostBySetStarFalse(1L)).thenReturn(one);
+        PostWithCommentsDto postWithCommentsDto = UtilService.getPostWithCommentsDto(one);
+        when(postService.updatePostBySetStarFalse(1L)).thenReturn(postWithCommentsDto);
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/posts/1/star")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -382,11 +391,14 @@ class PostControllerTest {
         sport.getPosts().add(two);
 
         List<String> tagsName = Arrays.asList(sport.getName(),box.getName());
-        Set<Post> postSet = new HashSet<>();
-        postSet.add(one);
-        postSet.add(two);
+//        Set<Post> postSet = new HashSet<>();
+//        postSet.add(one);
+//        postSet.add(two);
+        List<Post> posts = List.of(one, two);
+        List<PostWithCommentsAndTagsDto> postWithCommentsAndTagsDtos = UtilService.getPostsWithCommentsAndTagsDto(posts);
 
-        when(postService.getPostsByTags(tagsName)).thenReturn(postSet);
+
+        when(postService.getPostsByTags(tagsName)).thenReturn(postWithCommentsAndTagsDtos);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/tags/sport,box")
         .contentType(MediaType.APPLICATION_JSON))

@@ -1,9 +1,9 @@
-package com.luxcampus.Blog.service;
+package com.luxcampus.Blog.service.impl;
 
 import com.luxcampus.Blog.entity.Post;
 import com.luxcampus.Blog.entity.Tag;
-import com.luxcampus.Blog.repository.PostRepository;
 import com.luxcampus.Blog.repository.TagRepository;
+import com.luxcampus.Blog.service.TagServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +17,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class TagService implements TagServiceInterface {
 
-    private final PostRepository postRepository;
+    private final PostService postService;
     private final TagRepository tagRepository;
 
     @Transactional
@@ -25,7 +25,8 @@ public class TagService implements TagServiceInterface {
     public void addTagToPost(Tag tag, Long postId) {
         //check if tag from request is already in db
         Tag tagFromDB = tagRepository.findByName(tag.getName());
-        Post post = postRepository.getById(postId);
+        Optional<Post> optionalPost = postService.findById(postId);
+        Post post = optionalPost.get();
         if (tagFromDB==null){
             //it is new tag, it should be saved in db
             post.getTags().add(tag);
@@ -50,7 +51,7 @@ public class TagService implements TagServiceInterface {
     public void deleteTagFromPost(Long id) {
         Optional<Tag> optionalTag = tagRepository.findById(id);
         if (optionalTag.isPresent()) {
-            List<Post> postList = postRepository.findAll();
+            List<Post> postList = postService.findAll();
             Tag tag = optionalTag.get();
             for (Post post : postList) {
                 Set<Tag> tagSet = post.getTags();

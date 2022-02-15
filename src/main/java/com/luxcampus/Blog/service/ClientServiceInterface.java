@@ -5,7 +5,7 @@ import com.luxcampus.Blog.domain.Role;
 
 import java.util.List;
 
-public interface ClientService {
+public interface ClientServiceInterface {
     Client saveClient(Client client);
     Role saveRole(Role role);
     void addRoleToClient(String clientname, String roleName);

@@ -1,9 +1,10 @@
-package com.luxcampus.Blog.service;
+package com.luxcampus.Blog.service.impl;
 
 import com.luxcampus.Blog.entity.Comment;
 import com.luxcampus.Blog.entity.Post;
 import com.luxcampus.Blog.repository.CommentRepository;
 import com.luxcampus.Blog.repository.PostRepository;
+import com.luxcampus.Blog.service.CommentServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +16,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CommentService implements CommentServiceInterface {
     private final CommentRepository commentRepository;
-
-    private final PostRepository postRepository;
+    private final PostService postService;
 
     @Override
     public void save(Long postId, Comment comment) {
-
-        Post post = postRepository.getById(postId);
-        comment.setPost(post);
+        Optional <Post> optionalPost = postService.findById(postId);
+        comment.setPost(optionalPost.get());
         comment.setCreated_on(LocalDateTime.now());
         commentRepository.save(comment);
     }

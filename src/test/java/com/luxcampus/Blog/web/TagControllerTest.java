@@ -1,14 +1,11 @@
 package com.luxcampus.Blog.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.luxcampus.Blog.entity.Comment;
 import com.luxcampus.Blog.entity.Post;
 import com.luxcampus.Blog.entity.Tag;
-import com.luxcampus.Blog.service.CommentService;
-import com.luxcampus.Blog.service.PostService;
-import com.luxcampus.Blog.service.TagService;
-import org.checkerframework.checker.units.qual.C;
+import com.luxcampus.Blog.service.impl.CommentService;
+import com.luxcampus.Blog.service.impl.PostService;
+import com.luxcampus.Blog.service.impl.TagService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +14,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

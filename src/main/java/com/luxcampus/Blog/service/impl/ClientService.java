@@ -1,9 +1,10 @@
-package com.luxcampus.Blog.service;
+package com.luxcampus.Blog.service.impl;
 
 import com.luxcampus.Blog.domain.Client;
 import com.luxcampus.Blog.domain.Role;
 import com.luxcampus.Blog.repository.ClientRepository;
 import com.luxcampus.Blog.repository.RoleRepository;
+import com.luxcampus.Blog.service.ClientServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,7 +23,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ClientServiceImpl implements ClientService, UserDetailsService {
+public class ClientService implements ClientServiceInterface, UserDetailsService {
 
     private final ClientRepository clientRepository;
     private final RoleRepository roleRepository;

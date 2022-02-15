@@ -4,15 +4,16 @@ import com.luxcampus.Blog.entity.Post;
 import com.luxcampus.Blog.entity.Tag;
 import com.luxcampus.Blog.repository.PostRepository;
 import com.luxcampus.Blog.repository.TagRepository;
+import com.luxcampus.Blog.service.impl.PostService;
+import com.luxcampus.Blog.service.impl.TagService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -20,11 +21,12 @@ import static org.mockito.Mockito.*;
 class TagServiceTest {
 
     @Mock
-    private PostRepository postRepository;
+    private PostService postService;
     @Mock
     private TagRepository tagRepository;
 
     @Test
+    @DisplayName(value = "Test add tag to post and checking save and get by id (tagRepository, postService) methods calling")
     void addTagToPost() {
         Post one = Post.builder()
                 .id(1L)
@@ -32,10 +34,11 @@ class TagServiceTest {
                 .content("bbc.com")
                 .tags(new HashSet<Tag>())
                 .build();
+        Optional<Post> post = Optional.of(one);
 
-        when(postRepository.getById(1L)).thenReturn(one);
+        when(postService.findById(1L)).thenReturn(post);
 
-        TagService tagService = new TagService(postRepository, tagRepository);
+        TagService tagService = new TagService(postService, tagRepository);
 
         Tag tag = Tag.builder()
                 .id(1L)
@@ -48,11 +51,12 @@ class TagServiceTest {
         tagService.addTagToPost(tag, 1L);
 
         verify(tagRepository, times(1)).save(any());
-        verify(postRepository, times(1)).getById(1L);
+        verify(postService, times(1)).findById(1L);
     }
 
 
     @Test
+    @DisplayName(value = "Test delete tag from post and checking delete and find all (tagRepository, postService) methods calling")
     void deleteTagFromPost() {
         Tag tag1 = Tag.builder()
                 .id(1L)
@@ -94,15 +98,15 @@ class TagServiceTest {
 
         Optional<Tag> optionalTag = Optional.of(tag1);
 
-        when(postRepository.findAll()).thenReturn(postsWithTags);
+        when(postService.findAll()).thenReturn(postsWithTags);
         when(tagRepository.findById(1L)).thenReturn(optionalTag);
 
-        TagService tagService = new TagService(postRepository, tagRepository);
+        TagService tagService = new TagService(postService, tagRepository);
 
         tagService.deleteTagFromPost(1L);
 
         verify(tagRepository, times(1)).delete(tag1);
-        verify(postRepository, times(1)).findAll();
+        verify(postService, times(1)).findAll();
     }
 
 
